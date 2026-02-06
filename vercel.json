@@ -1,10 +1,29 @@
 {
     "version": 2,
-    "buildCommand": "cd apps/web && npm run build",
-    "outputDirectory": "apps/web/.next",
-    "framework": "nextjs",
-    "installCommand": "npm install --prefix apps/web",
-    "env": {
-        "NEXT_PUBLIC_API_URL": "@api_url"
-    }
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "/api/index.js"
+        }
+    ],
+    "builds": [
+        {
+            "src": "apps/web/package.json",
+            "use": "@vercel/next"
+        },
+        {
+            "src": "apps/api/dist/index.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "apps/api/dist/index.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "apps/web/$1"
+        }
+    ]
 }

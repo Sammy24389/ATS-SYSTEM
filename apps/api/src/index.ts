@@ -17,8 +17,12 @@ import { initializeRedis, closeRedis } from '@/lib/cache.js';
 import { closeBrowser } from '@/services/pdf-export.service.js';
 import { sanitizeInputMiddleware, validateContentType } from '@/middleware/sanitize.js';
 
-async function createServer(): Promise<Express> {
-    const app = express();
+let app: Express | null = null;
+
+async function getApp(): Promise<Express> {
+    if (app) return app;
+
+    app = express();
 
     // Security middleware
     app.use(helmet());
@@ -52,21 +56,19 @@ async function createServer(): Promise<Express> {
     app.use(notFoundHandler);
     app.use(errorHandler);
 
+    // Initialize services
+    initializeAIService();
+
     return app;
 }
 
-async function startServer(): Promise<void> {
+// Standalone Server Start (for local dev/Railway)
+async function startStandaloneServer() {
     try {
-        // Connect to database
         await connectDatabase();
+        const appInstance = await getApp();
 
-        // Initialize AI service
-        initializeAIService();
-
-        // Create and start server
-        const app = await createServer();
-
-        const server = app.listen(env.PORT, () => {
+        const server = appInstance.listen(env.PORT, () => {
             logger.info(`🚀 Server running on http://localhost:${env.PORT}`);
             logger.info(`📊 Health check: http://localhost:${env.PORT}/health`);
             logger.info(`🌍 Environment: ${env.NODE_ENV}`);
@@ -97,4 +99,15 @@ async function startServer(): Promise<void> {
     }
 }
 
-startServer();
+// Only start server if running directly (not imported as Vercel function)
+// VERCEL env var is usually set in Vercel environment
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    startStandaloneServer();
+}
+
+// Export for Vercel Serverless
+export default async (req: any, res: any) => {
+    await connectDatabase(); // Ensure DB is connected per request (or reused)
+    const appInstance = await getApp();
+    return appInstance(req, res);
+};
