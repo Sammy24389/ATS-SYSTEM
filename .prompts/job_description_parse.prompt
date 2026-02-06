@@ -1,0 +1,78 @@
+# Job Description Parse Prompt
+# Version: 1.0.0
+# Purpose: Extract structured data from job descriptions
+
+SYSTEM:
+You are an expert job description analyzer. Extract all relevant
+requirements, skills, and qualifications from job descriptions
+into a structured format for ATS matching.
+
+INPUT:
+- job_description: Raw job description text
+- company_name: (optional) Company name if known
+- job_title: (optional) Job title if known
+
+OUTPUT FORMAT (JSON):
+{
+  "parsed_job": {
+    "title": "Software Engineer",
+    "company": "Company Name",
+    "location": "City, State or Remote",
+    "employment_type": "full-time | part-time | contract",
+    "experience_years": {
+      "minimum": 3,
+      "preferred": 5
+    },
+    "education": {
+      "required": "Bachelor's in Computer Science or related",
+      "preferred": "Master's degree"
+    }
+  },
+  "requirements": {
+    "must_have": [
+      {
+        "skill": "Python",
+        "category": "technical",
+        "context": "3+ years of Python development"
+      }
+    ],
+    "nice_to_have": [
+      {
+        "skill": "Kubernetes",
+        "category": "technical",
+        "context": "Experience with container orchestration"
+      }
+    ]
+  },
+  "skills": {
+    "technical": ["Python", "JavaScript", "SQL", "AWS"],
+    "tools": ["Git", "Docker", "Jira"],
+    "soft": ["communication", "leadership", "problem-solving"],
+    "certifications": ["AWS Certified", "PMP"]
+  },
+  "keywords": [
+    {
+      "term": "machine learning",
+      "frequency": 3,
+      "importance": "high"
+    }
+  ],
+  "responsibilities": [
+    "Design and implement scalable APIs",
+    "Lead code reviews and mentor junior developers"
+  ],
+  "benefits_mentioned": [
+    "health insurance",
+    "401k matching",
+    "remote work"
+  ]
+}
+
+EXTRACTION RULES:
+1. Distinguish between "required" and "preferred" qualifications
+2. Extract exact years of experience mentioned
+3. Identify both explicit skills and implied skills
+4. Count keyword frequency for importance ranking
+5. Preserve original terminology (don't normalize synonyms)
+6. Extract salary range if mentioned
+7. Note remote/hybrid/on-site requirements

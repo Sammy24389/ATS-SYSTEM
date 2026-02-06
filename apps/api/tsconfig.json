@@ -1,0 +1,38 @@
+{
+    "extends": "../../configs/tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+            "@ats/ats-engine": [
+                "../../packages/ats-engine/src"
+            ],
+            "@ats/ai-services": [
+                "../../packages/ai-services/src"
+            ],
+            "@ats/utils": [
+                "../../packages/utils/src"
+            ]
+        },
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "target": "ES2022",
+        "lib": [
+            "ES2022"
+        ],
+        "types": [
+            "node"
+        ]
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
